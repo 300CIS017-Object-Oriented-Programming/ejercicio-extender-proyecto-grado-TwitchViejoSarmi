@@ -4,12 +4,14 @@ from model.InfoActa import InfoActa
 from datetime import datetime
 from controller.ControladorPDF import ControladorPdf
 
+import plotly.graph_objects as go
+
 # Este archivo contiene las funcionalidades de la vista relacionado con la evaluación de las actas
 
 
 def agregar_acta(st, controlador):
     st.title("Generación De Actas")
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
     col5, col6, col7, col8 = st.columns(4)
     # Objeto que modelará el formulario
     info_acta_obj = InfoActa(controlador.criterios)
@@ -20,18 +22,31 @@ def agregar_acta(st, controlador):
         info_acta_obj.nombre_trabajo = st.text_input("Nombre De Trabajo")
     with col3:
         info_acta_obj.tipo_trabajo = st.selectbox('Tipo', ('Aplicado', 'Investigación'))
+    with col4:
+        # TODO Cambiar el formato de date a string.
+        info_acta_obj.fecha_presen = st.date_input("Fecha de Presentación", datetime.today())
     with col5:
-        info_acta_obj.director = st.text_input("Director")
+        info_acta_obj.director = st.selectbox('Director', controlador.retornar_directores())
     with col6:
         info_acta_obj.codirector = st.text_input("Codirector", "N.A")
     with col7:
         info_acta_obj.jurado1 = st.text_input("Jurado #1")
+        flag1 = st.checkbox('El jurado #1 pertenece a la Universidad')
+        if flag1:
+            info_acta_obj.jurado1_tipo = "Interno"
+        else:
+            info_acta_obj.jurado1_tipo = "Externo"
     with col8:
         info_acta_obj.jurado2 = st.text_input("Jurado #2")
+        flag2 = st.checkbox('El jurado #2 pertenece a la Universidad')
+        if flag2:
+            info_acta_obj.jurado2_tipo = "Interno"
+        else:
+            info_acta_obj.jurado2_tipo = "Externo"
     enviado_btn = st.button("Enviar")
 
     # Cuando se oprime el botón se agrega a la lista
-    if enviado_btn and info_acta_obj.autor != "" and info_acta_obj.nombre_trabajo != "" and info_acta_obj.director != "" \
+    if enviado_btn and info_acta_obj.autor != "" and info_acta_obj.nombre_trabajo != "" and info_acta_obj.director != "" and info_acta_obj.fecha_presen != "" \
             and info_acta_obj.jurado1 != "" and info_acta_obj.jurado2 != "":
         controlador.agregar_evaluacion(info_acta_obj)
         st.success("Acta Agregada Exitosamente.")
@@ -54,7 +69,7 @@ def ver_historico_acta(st, controlador):
     for acta in controlador.actas:
         st.write("#### Acta #", numero)
         numero += 1
-        col1, col2, col3, col4 = st.columns(4)
+        col1, col2, col3, col4, col11 = st.columns(5)
         col5, col6, col7, col8 = st.columns(4)
         col9, col10 = st.columns(2)
         with col1:
@@ -69,6 +84,9 @@ def ver_historico_acta(st, controlador):
         with col4:
             st.write("**Fecha De Creación**")
             st.write(acta.fecha_acta)
+        with col11:
+            st.write("**Fecha De Presentación**")
+            st.write(acta.fecha_presen)
         with col5:
             st.write("**Director**")
             st.write(acta.director)
@@ -78,9 +96,11 @@ def ver_historico_acta(st, controlador):
         with col7:
             st.write("**Jurado #1**")
             st.write(acta.jurado1)
+            st.write("Jurado", acta.jurado1_tipo)
         with col8:
             st.write("**Jurado #2**")
             st.write(acta.jurado2)
+            st.write("Jurado", acta.jurado1_tipo)
         with col9:
             st.write("**Nota Final**")
             if not acta.estado:
@@ -116,6 +136,7 @@ def evaluar_criterios(st, controlador):
                 criterio.observacion = st.text_input(str(num) + ". Observación", "Sin Comentarios.")
                 temp += criterio.nota
                 num += 1
+            acta.observacion_extra = st.text_input("Observaciones Adicionales y/o restricciones", "Sin Observaciones.")
             if temp > 3.5:
                 st.write("#### Nota Final", temp, "Acta Aprobada.")
             else:
@@ -159,3 +180,54 @@ def exportar_acta(st, controlador):
 
     if len(controlador.actas) == 0:
         st.warning("No Hay Ningún Estudiante Calificado Actualmente.")
+
+def mostrar_estadisticas(st, controlador):
+    aplicados = 0
+    investigacion = 0
+    externos = 0
+    internos = 0
+    proyectos_sup_48 = 0
+    proyectos_men_48 = 0
+    for acta in controlador.actas:
+        if acta.tipo_trabajo == "Aplicado":
+            aplicados += 1
+        else:
+            investigacion += 1
+        
+        # En la implementación de este programa, una acta puede tener un jurado externo y uno interno a la vez.
+        if acta.jurado1_tipo == "Interno" or acta.jurado2_tipo == "Interno":
+            internos += 1
+        if acta.jurado1_tipo == "Externo" or acta.jurado2_tipo == "Externo":
+            externos += 1
+
+        if acta.nota_final > 4.8:
+            proyectos_sup_48 += 1
+        else:
+            proyectos_men_48 += 1
+    st.title("Estadísticas")
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.write("Número de proyectos aplicados: ", aplicados)
+        st.write("Número de proyectos de investigación: ", investigacion)
+    with col2:
+        st.write("Número de proyectos con jurados externos: ", externos)
+        st.write("Número de proyectos con jurados internos: ", internos)
+    with col3:  
+        st.write("Número de proyectos con nota superior a 4.8: ", proyectos_sup_48)
+
+    st.title("Gráficos Comparativos")
+
+    comparacion1 = go.Figure(data=[go.Pie(labels=["Aplicado", "Investigación"], values = [aplicados, investigacion])])
+
+    st.write(comparacion1)
+
+    
+    comparacion2 = go.Figure(data=[go.Pie(labels=["Externos", "Internos"], values = [externos, internos])])
+
+    st.write(comparacion2)
+
+    
+    comparacion3 = go.Figure(data=[go.Pie(labels=[">4.8", "<=4.8"], values = [proyectos_sup_48, proyectos_men_48])])
+
+    st.write(comparacion3)

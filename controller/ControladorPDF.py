@@ -24,12 +24,13 @@ class ControladorPdf:
         self.pdf.cell(200, 10, txt="ACTA DE EVALUACIÓN DE GRADO", ln=1, align='C')
         self.pdf.cell(200, 10, txt="Facultad de Ingeniería.", ln=2, align='C')
         self.pdf.set_font("times", size=12)
-        self.pdf.multi_cell(185, 6,
-                       txt="Trabajo de grado denominado: Análisis de la similitud en el código fuente de dos programas de computador usando técnicas de inteligencia artificial",
-                       align='L')
         for acta in controlador.actas:
             if acta.autor == acta_seleccionada:
                 flag = True
+                self.pdf.multi_cell(185, 6,
+                       txt=f"Trabajo de grado denominado:     {acta.nombre_trabajo}",
+                       align='L')
+                self.pdf.cell(200, 10, txt=f"Fecha De Presentación:                                {acta.fecha_presen}", ln=1, align='L')
                 self.pdf.cell(200, 10, txt=f"Autor:                                {acta.autor}", ln=1, align='L')
                 self.pdf.cell(200, 10, txt=f"Fecha/Periodo:                  {acta.fecha_acta} Tesis II", ln=1, align='L')
                 self.pdf.cell(200, 10, txt=f"Director:                            {acta.director}", ln=1, align='L')
@@ -75,7 +76,7 @@ class ControladorPdf:
                                txt="_____________________________________________________________________________________",
                                align='L')
                 self.pdf.multi_cell(185, 10,
-                               txt="La calificación final queda sujeta a que se implementen las siguientes correcciones: Que se revise el abstract.",
+                               txt=f"{acta.observacion_extra}",
                                align="L")
                 self.pdf.multi_cell(185, 5,
                                txt="_____________________________________________________________________________________",
@@ -88,9 +89,10 @@ class ControladorPdf:
                                align='L')
                 self.pdf.cell(200, 30, txt="________________________________   ________________________________", ln=2,
                          align='C')
-                self.pdf.cell(200, 5, txt="Firma Jurado 1                                      Firma Jurado 2 ", ln=2,
+                self.pdf.cell(200, 5, txt=f"Firma {acta.jurado1}                                      Firma {acta.jurado2} ", ln=2,
                          align='C')
 
+        # FIXME El encode no funciona.
         if [acta.autor for acta in controlador.actas if acta.estado and flag]:
             self.pdf_nombre = f"outputs/Acta_{acta_seleccionada}.self.pdf"
             self.pdf.output(dest='F', name=self.pdf_nombre).encode('latin-1')
