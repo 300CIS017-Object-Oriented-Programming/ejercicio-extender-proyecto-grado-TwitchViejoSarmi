@@ -4,6 +4,8 @@ from model.InfoActa import InfoActa
 from datetime import datetime
 from controller.ControladorPDF import ControladorPdf
 
+import plotly.graph_objects as go
+
 # Este archivo contiene las funcionalidades de la vista relacionado con la evaluación de las actas
 
 
@@ -185,6 +187,7 @@ def mostrar_estadisticas(st, controlador):
     externos = 0
     internos = 0
     proyectos_sup_48 = 0
+    proyectos_men_48 = 0
     for acta in controlador.actas:
         if acta.tipo_trabajo == "Aplicado":
             aplicados += 1
@@ -192,17 +195,39 @@ def mostrar_estadisticas(st, controlador):
             investigacion += 1
         
         # En la implementación de este programa, una acta puede tener un jurado externo y uno interno a la vez.
-        if acta.jurado1_tipo == "Interno" | acta.jurado2_tipo == "Interno":
+        if acta.jurado1_tipo == "Interno" or acta.jurado2_tipo == "Interno":
             internos += 1
-        if acta.jurado1_tipo == "Externo" | acta.jurado2_tipo == "Externo":
+        if acta.jurado1_tipo == "Externo" or acta.jurado2_tipo == "Externo":
             externos += 1
 
         if acta.nota_final > 4.8:
             proyectos_sup_48 += 1
-
+        else:
+            proyectos_men_48 += 1
     st.title("Estadísticas")
-    st.write("Número de proyectos aplicados: ", aplicados)
-    st.write("Número de proyectos de investigación: ", investigacion)
-    st.write("Número de proyectos con jurados externos: ", externos)
-    st.write("Número de proyectos con jurados internos: ", internos)
-    st.write("Número de proyectos con nota superior a 4.8: ", proyectos_sup_48)
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.write("Número de proyectos aplicados: ", aplicados)
+        st.write("Número de proyectos de investigación: ", investigacion)
+    with col2:
+        st.write("Número de proyectos con jurados externos: ", externos)
+        st.write("Número de proyectos con jurados internos: ", internos)
+    with col3:  
+        st.write("Número de proyectos con nota superior a 4.8: ", proyectos_sup_48)
+
+    st.title("Gráficos Comparativos")
+
+    comparacion1 = go.Figure(data=[go.Pie(labels=["Aplicado", "Investigación"], values = [aplicados, investigacion])])
+
+    st.write(comparacion1)
+
+    
+    comparacion2 = go.Figure(data=[go.Pie(labels=["Externos", "Internos"], values = [externos, internos])])
+
+    st.write(comparacion2)
+
+    
+    comparacion3 = go.Figure(data=[go.Pie(labels=[">4.8", "<=4.8"], values = [proyectos_sup_48, proyectos_men_48])])
+
+    st.write(comparacion3)
