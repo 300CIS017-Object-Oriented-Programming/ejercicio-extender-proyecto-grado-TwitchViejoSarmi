@@ -25,4 +25,5 @@ class InfoActa:
         self.jurado2_tipo = ""
         self.nota_final = 0.0
         self.criterios = criterios
+        self.observacion_extra = ""
         self.estado = False

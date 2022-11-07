@@ -13,4 +13,3 @@ class Criterio:
         self.porcentaje = porcentaje
         self.nota = nota
         self.observacion = observacion
-        self.observacion_extra = observacion_extra

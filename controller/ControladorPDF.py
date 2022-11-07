@@ -76,7 +76,7 @@ class ControladorPdf:
                                txt="_____________________________________________________________________________________",
                                align='L')
                 self.pdf.multi_cell(185, 10,
-                               txt=f"{acta.criterios[0].observacion_extra}",
+                               txt=f"{acta.observacion_extra}",
                                align="L")
                 self.pdf.multi_cell(185, 5,
                                txt="_____________________________________________________________________________________",

@@ -136,7 +136,7 @@ def evaluar_criterios(st, controlador):
                 criterio.observacion = st.text_input(str(num) + ". Observación", "Sin Comentarios.")
                 temp += criterio.nota
                 num += 1
-            criterio.observacion_extra = st.text_input("Observaciones Adicionales y/o restricciones", "Sin Observaciones.")
+            acta.observacion_extra = st.text_input("Observaciones Adicionales y/o restricciones", "Sin Observaciones.")
             if temp > 3.5:
                 st.write("#### Nota Final", temp, "Acta Aprobada.")
             else:
