@@ -14,6 +14,7 @@ class InfoActa:
         # Datos del acta
         self.autor = ""
         self.fecha_acta = ""
+        self.fecha_presen = ""
         self.nombre_trabajo = ""
         self.tipo_trabajo = ""
         self.director = ""

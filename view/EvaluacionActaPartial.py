@@ -9,7 +9,7 @@ from controller.ControladorPDF import ControladorPdf
 
 def agregar_acta(st, controlador):
     st.title("Generación De Actas")
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
     col5, col6, col7, col8 = st.columns(4)
     # Objeto que modelará el formulario
     info_acta_obj = InfoActa(controlador.criterios)
@@ -20,8 +20,11 @@ def agregar_acta(st, controlador):
         info_acta_obj.nombre_trabajo = st.text_input("Nombre De Trabajo")
     with col3:
         info_acta_obj.tipo_trabajo = st.selectbox('Tipo', ('Aplicado', 'Investigación'))
+    with col4:
+        # TODO Cambiar el formato de date a string.
+        info_acta_obj.fecha_presen = st.date_input("Fecha de Presentación", datetime.today())
     with col5:
-        info_acta_obj.director = st.text_input("Director")
+        info_acta_obj.director = st.selectbox('Director', controlador.retornar_directores())
     with col6:
         info_acta_obj.codirector = st.text_input("Codirector", "N.A")
     with col7:
@@ -31,7 +34,7 @@ def agregar_acta(st, controlador):
     enviado_btn = st.button("Enviar")
 
     # Cuando se oprime el botón se agrega a la lista
-    if enviado_btn and info_acta_obj.autor != "" and info_acta_obj.nombre_trabajo != "" and info_acta_obj.director != "" \
+    if enviado_btn and info_acta_obj.autor != "" and info_acta_obj.nombre_trabajo != "" and info_acta_obj.director != "" and info_acta_obj.fecha_presen != "" \
             and info_acta_obj.jurado1 != "" and info_acta_obj.jurado2 != "":
         controlador.agregar_evaluacion(info_acta_obj)
         st.success("Acta Agregada Exitosamente.")
@@ -54,7 +57,7 @@ def ver_historico_acta(st, controlador):
     for acta in controlador.actas:
         st.write("#### Acta #", numero)
         numero += 1
-        col1, col2, col3, col4 = st.columns(4)
+        col1, col2, col3, col4, col11 = st.columns(5)
         col5, col6, col7, col8 = st.columns(4)
         col9, col10 = st.columns(2)
         with col1:
@@ -69,6 +72,9 @@ def ver_historico_acta(st, controlador):
         with col4:
             st.write("**Fecha De Creación**")
             st.write(acta.fecha_acta)
+        with col11:
+            st.write("**Fecha De Presentación**")
+            st.write(acta.fecha_presen)
         with col5:
             st.write("**Director**")
             st.write(acta.director)

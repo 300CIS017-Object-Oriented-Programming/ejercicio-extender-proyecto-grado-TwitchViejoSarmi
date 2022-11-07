@@ -30,6 +30,7 @@ class ControladorPdf:
         for acta in controlador.actas:
             if acta.autor == acta_seleccionada:
                 flag = True
+                self.pdf.cell(200, 10, txt=f"Fecha De Presentación:                                {acta.fecha_presen}", ln=1, align='L')
                 self.pdf.cell(200, 10, txt=f"Autor:                                {acta.autor}", ln=1, align='L')
                 self.pdf.cell(200, 10, txt=f"Fecha/Periodo:                  {acta.fecha_acta} Tesis II", ln=1, align='L')
                 self.pdf.cell(200, 10, txt=f"Director:                            {acta.director}", ln=1, align='L')
@@ -91,6 +92,7 @@ class ControladorPdf:
                 self.pdf.cell(200, 5, txt="Firma Jurado 1                                      Firma Jurado 2 ", ln=2,
                          align='C')
 
+        # FIXME El encode no funciona.
         if [acta.autor for acta in controlador.actas if acta.estado and flag]:
             self.pdf_nombre = f"outputs/Acta_{acta_seleccionada}.self.pdf"
             self.pdf.output(dest='F', name=self.pdf_nombre).encode('latin-1')
