@@ -134,6 +134,7 @@ def evaluar_criterios(st, controlador):
                 criterio.observacion = st.text_input(str(num) + ". Observación", "Sin Comentarios.")
                 temp += criterio.nota
                 num += 1
+            criterio.observacion_extra = st.text_input("Observaciones Adicionales y/o restricciones", "Sin Observaciones.")
             if temp > 3.5:
                 st.write("#### Nota Final", temp, "Acta Aprobada.")
             else:
@@ -177,3 +178,31 @@ def exportar_acta(st, controlador):
 
     if len(controlador.actas) == 0:
         st.warning("No Hay Ningún Estudiante Calificado Actualmente.")
+
+def mostrar_estadisticas(st, controlador):
+    aplicados = 0
+    investigacion = 0
+    externos = 0
+    internos = 0
+    proyectos_sup_48 = 0
+    for acta in controlador.actas:
+        if acta.tipo_trabajo == "Aplicado":
+            aplicados += 1
+        else:
+            investigacion += 1
+        
+        # En la implementación de este programa, una acta puede tener un jurado externo y uno interno a la vez.
+        if acta.jurado1_tipo == "Interno" | acta.jurado2_tipo == "Interno":
+            internos += 1
+        if acta.jurado1_tipo == "Externo" | acta.jurado2_tipo == "Externo":
+            externos += 1
+
+        if acta.nota_final > 4.8:
+            proyectos_sup_48 += 1
+
+    st.title("Estadísticas")
+    st.write("Número de proyectos aplicados: ", aplicados)
+    st.write("Número de proyectos de investigación: ", investigacion)
+    st.write("Número de proyectos con jurados externos: ", externos)
+    st.write("Número de proyectos con jurados internos: ", internos)
+    st.write("Número de proyectos con nota superior a 4.8: ", proyectos_sup_48)

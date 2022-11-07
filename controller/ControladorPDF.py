@@ -76,7 +76,7 @@ class ControladorPdf:
                                txt="_____________________________________________________________________________________",
                                align='L')
                 self.pdf.multi_cell(185, 10,
-                               txt="La calificación final queda sujeta a que se implementen las siguientes correcciones: Que se revise el abstract.",
+                               txt=f"{acta.observacion_extra}",
                                align="L")
                 self.pdf.multi_cell(185, 5,
                                txt="_____________________________________________________________________________________",

@@ -42,8 +42,8 @@ class MainView:
         # Definimos lo que abra en la barra de menu
         with st.sidebar:
             st.image("img/LogoJaverianaCali.jpg", width=297)
-            self.menu_actual = option_menu("Menu", ["Inicio", 'Crear acta', 'Evaluar acta', 'Exportar acta', 'Ver históricos'],
-                                           icons=['house', 'mortarboard', 'people', 'arrow-bar-up', 'person-check-fill'], menu_icon="cast", default_index=0)
+            self.menu_actual = option_menu("Menu", ["Inicio", 'Crear acta', 'Evaluar acta', 'Exportar acta', 'Ver históricos', 'Estadísticas'],
+                                           icons=['house', 'mortarboard', 'people', 'arrow-bar-up', 'person-check-fill', 'align-bottom'], menu_icon="cast", default_index=0)
 
     def mostrar_bienvenida(self):
         return """
@@ -70,6 +70,8 @@ class MainView:
             exportar_acta(st, self.controller)
         elif self.menu_actual == "Ver históricos":
             ver_historico_acta(st, self.controller)
+        elif self.menu_actual == "Estadísticas":
+            pass
 
 
 # Main call
